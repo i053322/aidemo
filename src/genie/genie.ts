@@ -5,6 +5,8 @@ import { writeFileSync } from '../util/local-file';
 import { SampleGenieSession } from './genie-session';
 import profile from './profile';
 
+let index: number = 1;
+
 export class SampleGenie extends AbstractGenie {
   constructor() {
     super(profile);
@@ -13,8 +15,8 @@ export class SampleGenie extends AbstractGenie {
   /**
    * [Mandatory] The file-level checking machanism for waking up the current BAS genie
    * (It can be invoked when an opened file tab is activated)
-   * @param activeEnv
-   * @returns
+   * @param activeEnv 
+   * @returns 
    */
   async match(activeEnv: ActiveEnv): Promise<boolean> {
     return true;
@@ -25,7 +27,7 @@ export class SampleGenie extends AbstractGenie {
   /**
    * The default initial prompt shown in the Joule input field when activating the current BAS genie
    * (It's for UX quick input purpose)
-   * @returns
+   * @returns 
    */
   async getInitialPrompt(activeEnv: ActiveEnv): Promise<string> {
     return super.getInitialPrompt(activeEnv);
@@ -33,7 +35,7 @@ export class SampleGenie extends AbstractGenie {
 
   /**
    * Override the auto attached system messages here
-   * @returns
+   * @returns 
    */
   async getKnowledge(): Promise<string[]> {
     const knowledge = await super.getKnowledge();
@@ -44,8 +46,8 @@ export class SampleGenie extends AbstractGenie {
 
   /**
    * Override the auto attahced user context messages here
-   * @param prompt
-   * @param session
+   * @param prompt 
+   * @param session 
    */
   async getContextPrompt(prompt: string, session: IGenieSession): Promise<string> {
     const userContext = await super.getContextPrompt(prompt, session);
@@ -56,7 +58,7 @@ export class SampleGenie extends AbstractGenie {
 
   /**
    * Override the model vendor name here
-   * @returns
+   * @returns 
    */
   async getModelVendor(): Promise<string> {
     const modeVendor = await super.getModelVendor();
@@ -67,7 +69,7 @@ export class SampleGenie extends AbstractGenie {
 
   /**
    * Override the model vendor name here
-   * @returns
+   * @returns 
    */
   async getModelSettings(): Promise<any> {
     const modelSettings = await super.getModelSettings();
@@ -79,10 +81,10 @@ export class SampleGenie extends AbstractGenie {
   /**
    * Override the startSession here, inlcuding attach more info to the user context, and use a customized genie session
    * All the conversational chat messages for one specific matched file will be maintained in one GenieSession object
-   * @param initialPrompt
-   * @param userContext
-   * @param activeEnv
-   * @returns
+   * @param initialPrompt 
+   * @param userContext 
+   * @param activeEnv 
+   * @returns 
    */
   async startSession(initialPrompt: string, userContext: UserContext, activeEnv: ActiveEnv): Promise<IGenieSession> {
     try {
@@ -106,30 +108,53 @@ export class SampleGenie extends AbstractGenie {
 
   // no need the custom implementation any more, since it could be achieved by the predefined BAS agent `file:copyResponse` (see profile.ts)
   /**
-   /  * The custom implementation for the user action `accept` defined in profile
-   * @param response
-   * @param session
-   * @returns
-   */
-  async accept(response: string, session: IGenieSession): Promise<boolean> {
-    if (response) {
-      try {
+  /  * The custom implementation for the user action `accept` defined in profile
+    * @param response 
+    * @param session 
+    * @returns 
+    */
+   async accept(response: string, session: IGenieSession): Promise<boolean> {
+     if (response) {
+       try {
         const activeEnv = await session.getActiveEnv();
-        const filePath = path.join(activeEnv.projectInfo?.path, activeEnv.activeFilePath);
-        writeFileSync(filePath, response);
-        return true;
-      } catch (error) {
-        console.error(error);
-      }
-    }
-    return false;
-  }
+        const chatHistory =  await session.getChatHistory()
+        const responseData = chatHistory[0].response;
+        //const pattern: RegExp = /Sure, here are the files and their content:\r?\n\r?\n\*\*\*\r?\n([\s\S]*)/;
+
+//        const pattern: RegExp = /Sure, here are the files and their content:\n\n\*\*\*\n\s*(.*)/s;
+        //const match: RegExpMatchArray | null = responsData.match(pattern);
+        const splitContent = responseData.split('***');
+
+           // Check if there are at least two elements in the array
+           if (splitContent.length >= 2) {
+            // The content after the specified string is in the second element
+            const contentAfterString: string = splitContent[index].trim();
+            index = index + 2
+            const fileNameWithoutBackticks = contentAfterString.replace(/`/g, '');
+            const filePath = path.join(activeEnv.projectInfo?.path, "src","AIResponse", fileNameWithoutBackticks );
+            console.log(filePath);
+            writeFileSync(filePath, response);
+        } else {
+            console.log("Delimiter not found in the input string.");
+        }
+
+
+     //    const activeEnv = await session.getActiveEnv();
+     //    const filePath = path.join(activeEnv.projectInfo?.path, activeEnv.activeFilePath);
+     //    writeFileSync(filePath, response);
+         return true;
+       } catch (error) {
+         console.error(error);
+       }
+     }
+     return false;
+   }
 
   /**
    * The custom implementation for the user action `showResult` defined in profile
-   * @param response
-   * @param session
-   * @returns
+   * @param response 
+   * @param session 
+   * @returns 
    */
   async showResult(response: string, session: IGenieSession): Promise<boolean> {
     if (response) {
