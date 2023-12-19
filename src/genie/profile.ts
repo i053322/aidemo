@@ -1,5 +1,5 @@
 import { GenieProfile } from "@sap/gai-core";
-
+ 
 const profile: GenieProfile = {
   "ID": "sample-genie",
   "version": "1.0",
@@ -48,13 +48,43 @@ const profile: GenieProfile = {
     vendor: "openai-gpt",
     settings: {
       deployment_id: "gpt-4",
-      temperature: 0.5
+      temperature: 0.2
     }
   },
   "actions": [{
     "name": "accept",
-    "label": "Accept",
+    "label": "Accept PlainText",
     "language": "plaintext",
+    "icon": "codicon-insert"
+  },{
+    "name": "accept",
+    "label": "Accept Json",
+    "language": "json",
+    "icon": "codicon-insert"
+  },{
+    "name": "accept",
+    "label": "Accept Html",
+    "language": "html",
+    "icon": "codicon-insert"
+  },{
+    "name": "accept",
+    "label": "Accept JavaScript",
+    "language": "javascript",
+    "icon": "codicon-insert"
+  },{
+    "name": "accept",
+    "label": "Accept Xml",
+    "language": "xml",
+    "icon": "codicon-insert"
+  },{
+    "name": "accept",
+    "label": "Accept CSS",
+    "language": "css",
+    "icon": "codicon-insert"
+  },{
+    "name": "accept",
+    "label": "Accept Properties",
+    "language": "properties",
     "icon": "codicon-insert"
   },{
     "name": "showResult",
@@ -63,5 +93,5 @@ const profile: GenieProfile = {
     "icon": "codicon:info"
   }]
 };
-
+ 
 export default profile;
