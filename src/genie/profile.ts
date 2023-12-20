@@ -16,20 +16,16 @@ const profile: GenieProfile = {
   },
   "examples": [
     {
-      name: "about gravity",
-      description: "Can you explain gravity?"
+      name: "about fiori application",
+      description: "Can you explain how to create Fiori application?"
     },
     {
-      name: "about energy source",
-      description: "What's your source of energy?"
+      name: "about odata",
+      description: "What is Odata?"
     },
     {
-      name: "about daily routine",
-      description: "What's your daily routine?"
-    },
-    {
-      name: "about communication",
-      description: "How do you communicate with each other?"
+      name: "about destinations",
+      description: "How to create destination in BTP?"
     }
   ],
   "context": {
